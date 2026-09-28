@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "resources": [{
+    "type": "Microsoft.Compute/virtualMachines",
+    "apiVersion": "2024-03-01",
+    "name": "vm-web-dev-ncu-01",
+    "location": "northcentralus",
+    "tags": {
+      "Environment": "Dev", "Owner": "CloudTeam", "Project": "AzureFoundation",
+      "CostCenter": "IT-Lab", "ManagedBy": "Terraform"
+    },
+    "properties": { "hardwareProfile": { "vmSize": "Standard_D2as_v6" } }
+  }]
+}

@@ -1,0 +1,20 @@
+$ErrorActionPreference = 'Stop'
+$adminAddresses = '${admin_ips}'.Split(',')
+Install-WindowsFeature -Name Web-Server -IncludeManagementTools | Out-Null
+Import-Module WebAdministration
+
+# A instalação do IIS cria uma regra ampla: substituí-la por origem privada específica.
+Get-NetFirewallRule -Name 'IIS-WebServerRole-HTTP-In-TCP' -ErrorAction SilentlyContinue | Disable-NetFirewallRule
+Get-NetFirewallRule -Name 'RemoteDesktop*' -ErrorAction SilentlyContinue | Disable-NetFirewallRule
+Get-NetFirewallRule -Name 'Lab-IIS-HTTP','Lab-Admin-RDP' -ErrorAction SilentlyContinue | Remove-NetFirewallRule
+New-NetFirewallRule -Name 'Lab-IIS-HTTP' -DisplayName 'Lab IIS from test VM' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 80 -RemoteAddress '10.10.40.10' -Profile Any | Out-Null
+New-NetFirewallRule -Name 'Lab-Admin-RDP' -DisplayName 'Lab RDP from admin networks' -Direction Inbound -Action Allow -Protocol TCP -LocalPort 3389 -RemoteAddress $adminAddresses -Profile Any | Out-Null
+Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server' -Name fDenyTSConnections -Value 0
+Set-ItemProperty 'HKLM:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp' -Name UserAuthentication -Value 1
+
+$page = '<!doctype html><html lang="pt-BR"><meta charset="utf-8"><title>Contoso Brasil</title><body><h1>Contoso Brasil</h1><p>Azure Enterprise Foundation - Dev</p><p>IIS em Windows Server, provisionado com Terraform.</p></body></html>'
+$page | Set-Content 'C:\inetpub\wwwroot\index.html' -Encoding UTF8
+Start-Service W3SVC
+$response = Invoke-WebRequest -Uri 'http://localhost/index.html' -UseBasicParsing
+if ($response.StatusCode -ne 200 -or $response.Content -notmatch 'Contoso Brasil') { throw 'Falha na validação local do IIS' }
+Write-Output 'PASS: IIS instalado, página local HTTP 200, firewall restrito e RDP com NLA.'

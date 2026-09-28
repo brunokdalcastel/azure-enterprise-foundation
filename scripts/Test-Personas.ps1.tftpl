@@ -1,0 +1,53 @@
+$ErrorActionPreference = 'Stop'
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# Config contém somente IDs de recursos/clientes e tags; tokens nunca são impressos.
+$config = '__CONFIG_JSON__' | ConvertFrom-Json
+$results = [Collections.Generic.List[object]]::new()
+function Invoke-ArmTest($Persona, $Label, $Method, $Path, $Body, $Expected) {
+    $clientId = $config.clients.$Persona
+    $token = Invoke-RestMethod -Headers @{Metadata='true'} -Uri ('http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01&resource=https%3A%2F%2Fmanagement.azure.com%2F&client_id=' + $clientId)
+    $headers = @{Authorization=('Bearer ' + $token.access_token)}
+    $status = 0
+    $errorCode = ''
+    try {
+        $args = @{Uri=('https://management.azure.com' + $Path);Method=$Method;Headers=$headers;UseBasicParsing=$true;TimeoutSec=60}
+        if ($null -ne $Body) { $args.Body=($Body | ConvertTo-Json -Depth 20 -Compress); $args.ContentType='application/json' }
+        $response = Invoke-WebRequest @args
+        $status = [int]$response.StatusCode
+    } catch {
+        if ($null -eq $_.Exception.Response) { throw ('Falha de transporte no teste ' + $Label) }
+        $status = [int]$_.Exception.Response.StatusCode
+        try {
+            $rawError = $_.ErrorDetails.Message
+            if ([string]::IsNullOrWhiteSpace($rawError)) {
+                $reader = [IO.StreamReader]::new($_.Exception.Response.GetResponseStream())
+                $rawError = $reader.ReadToEnd()
+                $reader.Dispose()
+            }
+            $errorBody = $rawError | ConvertFrom-Json
+            $errorCode = $errorBody.error.code
+        } catch { $errorCode = 'UnparsedError' }
+    } finally {
+        $token = $null; $headers = $null
+    }
+    $passed = if ($Expected -eq 'deny') { $status -eq 403 -and $errorCode -eq 'AuthorizationFailed' } else { $status -ge 200 -and $status -lt 300 }
+    $results.Add([pscustomobject]@{persona=$Persona;test=$Label;status=$status;errorCode=$errorCode;passed=$passed})
+}
+$vnet = $config.vnetId + '?api-version=2024-05-01'
+$vm = $config.vmId + '?api-version=2024-03-01'
+$tags = @{tags=$config.tags}
+Invoke-ArmTest 'network' 'write_same_network_tags' 'PATCH' $vnet $tags 'allow'
+Invoke-ArmTest 'network' 'read_workload_denied' 'GET' $vm $null 'deny'
+Invoke-ArmTest 'analyst' 'read_vm' 'GET' $vm $null 'allow'
+Invoke-ArmTest 'analyst' 'write_same_vm_tags' 'PATCH' $vm $tags 'allow'
+Invoke-ArmTest 'analyst' 'write_network_denied' 'PATCH' $vnet $tags 'deny'
+Invoke-ArmTest 'developer' 'read_vm' 'GET' $vm $null 'allow'
+Invoke-ArmTest 'developer' 'write_network_denied' 'PATCH' $vnet $tags 'deny'
+Invoke-ArmTest 'developer' 'run_command_denied' 'POST' ($config.vmId + '/runCommand?api-version=2024-03-01') @{commandId='RunPowerShellScript';script=@('Write-Output "Harmless RBAC test"')} 'deny'
+Invoke-ArmTest 'auditor' 'read_vm' 'GET' $vm $null 'allow'
+Invoke-ArmTest 'auditor' 'write_vm_denied' 'PATCH' $vm $tags 'deny'
+Invoke-ArmTest 'auditor' 'write_network_denied' 'PATCH' $vnet $tags 'deny'
+# Reinicia somente a VM web, nunca a VM executora deste teste.
+Invoke-ArmTest 'developer' 'restart_web_vm' 'POST' ($config.vmId + '/restart?api-version=2024-03-01') $null 'allow'
+$results | ConvertTo-Json -Depth 5 -Compress
+if (@($results | Where-Object { -not $_.passed }).Count) { throw 'Falha nos testes RBAC; saída contém resultados sanitizados.' }

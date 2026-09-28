@@ -1,0 +1,6 @@
+{
+  "privateHttp200": true,
+  "expectedPage": true,
+  "lateralRdpBlocked": true,
+  "lateralSmbBlocked": true
+}

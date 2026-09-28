@@ -1,0 +1,86 @@
+[
+  {
+    "persona": "network",
+    "test": "write_same_network_tags",
+    "status": 200,
+    "errorCode": "",
+    "passed": true
+  },
+  {
+    "persona": "network",
+    "test": "read_workload_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "analyst",
+    "test": "read_vm",
+    "status": 200,
+    "errorCode": "",
+    "passed": true
+  },
+  {
+    "persona": "analyst",
+    "test": "write_same_vm_tags",
+    "status": 200,
+    "errorCode": "",
+    "passed": true
+  },
+  {
+    "persona": "analyst",
+    "test": "write_network_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "developer",
+    "test": "read_vm",
+    "status": 200,
+    "errorCode": "",
+    "passed": true
+  },
+  {
+    "persona": "developer",
+    "test": "write_network_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "developer",
+    "test": "run_command_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "auditor",
+    "test": "read_vm",
+    "status": 200,
+    "errorCode": "",
+    "passed": true
+  },
+  {
+    "persona": "auditor",
+    "test": "write_vm_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "auditor",
+    "test": "write_network_denied",
+    "status": 403,
+    "errorCode": "AuthorizationFailed",
+    "passed": true
+  },
+  {
+    "persona": "developer",
+    "test": "restart_web_vm",
+    "status": 202,
+    "errorCode": "",
+    "passed": true
+  }
+]

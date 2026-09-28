@@ -1,0 +1,18 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "location": { "type": "string", "defaultValue": "eastus" }
+  },
+  "resources": [{
+    "type": "Microsoft.Network/networkSecurityGroups",
+    "apiVersion": "2024-05-01",
+    "name": "nsg-policy-validation-only",
+    "location": "[parameters('location')]",
+    "tags": {
+      "Environment": "Dev", "Owner": "CloudTeam", "Project": "AzureFoundation",
+      "CostCenter": "IT-Lab", "ManagedBy": "Terraform"
+    },
+    "properties": {}
+  }]
+}

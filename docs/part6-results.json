@@ -1,0 +1,65 @@
+{
+  "observedOn": "2026-09-28",
+  "iis": {
+    "httpBefore": 200,
+    "httpDuring": 0,
+    "httpAfter": 200,
+    "serviceRestored": true,
+    "note": "Zero means no successful HTTP response"
+  },
+  "network": {
+    "before": {
+      "access": "Allow",
+      "rule": "securityRules/allow-test-http-in"
+    },
+    "incident": {
+      "access": "Deny",
+      "rule": "securityRules/allow-test-http-in"
+    },
+    "restored": {
+      "access": "Allow",
+      "rule": "securityRules/allow-test-http-in"
+    },
+    "method": "Network Watcher test-ip-flow; no real packet exchange"
+  },
+  "activity": {
+    "operation": "Microsoft.Network/networkSecurityGroups/securityRules/write",
+    "status": "Succeeded",
+    "time": "2026-09-28T14:42:41.2699676Z"
+  },
+  "alerts": [
+    {
+      "rule": "alert-cpu-web-dev-ncu-01",
+      "condition": "Fired",
+      "started": "2026-09-28T14:40:05.9972812Z",
+      "resolved": null
+    },
+    {
+      "rule": "alert-availability-web-dev-ncu-01",
+      "condition": "Fired",
+      "started": "2026-09-25T01:04:02.5346915Z",
+      "resolved": null
+    },
+    {
+      "rule": "alert-cpu-web-dev-ncu-01",
+      "condition": "Resolved",
+      "started": "2026-09-24T16:29:21.2307999Z",
+      "resolved": "2026-09-24T16:43:33.9365047Z"
+    }
+  ],
+  "notificationTest": {
+    "result": "HTTP Conflict: Free subscription not supported",
+    "emailReceipt": "unconfirmed"
+  },
+  "cleanup": {
+    "terraformDestroyed": 8,
+    "inventory": {
+      "disk": 0,
+      "public-ip": 0,
+      "workload": 0,
+      "operations": 0
+    },
+    "foundationCheck": "PASS",
+    "finalPlanExitCode": 0
+  }
+}

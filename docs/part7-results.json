@@ -1,0 +1,19 @@
+{
+  "date": "2026-09-28",
+  "foundationDestroyed": 35,
+  "bootstrapDestroyed": 4,
+  "foundationManagedStateResources": 0,
+  "bootstrapManagedStateResources": 0,
+  "azureResources": 0,
+  "azureResourceGroups": 0,
+  "labPolicies": 0,
+  "labCustomRoles": 0,
+  "existingBudgetPreserved": true,
+  "subscription": {
+    "quota": "FreeTrial_2014-09-01",
+    "spendingLimit": "On",
+    "state": "Enabled"
+  },
+  "emailDeliveryConfirmed": false,
+  "actualCostMeasured": false
+}

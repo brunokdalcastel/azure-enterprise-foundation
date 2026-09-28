@@ -1,0 +1,20 @@
+# Contexto financeiro local
+CONTINUIDADE.md
+.local/
+*.local.hcl
+
+# Terraform: estados, caches, planos e valores locais
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.tfvars
+*.tfvars.json
+!*.example.tfvars
+!*.example.tfvars.json
+crash.log
+crash.*.log
+.env
+.env.*
+!.env.example
+# .terraform.lock.hcl deve ser versionado.
