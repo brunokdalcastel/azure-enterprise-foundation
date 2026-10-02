@@ -28,7 +28,7 @@ A região e a versão do Windows foram ajustadas durante a implantação devido 
 | 3 — Governança e rede | Grupos, Policies, VNet, subnets e NSGs | Configuração verificada e teste de região proibida bloqueado |
 | 4 — Windows e IIS | VM, configuração da aplicação e testes do sistema | HTTP 200 e controles de acesso verificados; workload removido após testes |
 | 5 — RBAC e segmentação | Personas, permissões e testes entre VMs | 12 testes RBAC, HTTP privado, bloqueio lateral e Policies validados; temporários removidos |
-| 6 — Operação e incidentes | Métricas, alertas, Activity Log e troubleshooting | Disparos reais e recuperação de IIS/rede comprovados; entrega de e-mail não confirmada |
+| 6 — Operação e incidentes | Métricas, alertas, Activity Log e troubleshooting | Disparos reais e recuperação de IIS/rede comprovados; e-mail validado por alerta complementar de Activity Log |
 | 7 — Encerramento e portfólio | Evidências, documentação e destruição | Foundation e backend removidos; inventário final sem recursos ou grupos de recursos |
 
 ## Como usar o roteiro
@@ -43,6 +43,6 @@ O uso de Free Trial não torna todos os serviços gratuitos. VMs, discos, IPs, S
 
 Destrua a foundation enquanto o backend ainda estiver acessível, preserve o estado final localmente e remova o bootstrap por último. Confira também recursos automáticos fora do Terraform. Preserve recursos e acessos preexistentes que não pertençam ao laboratório.
 
-## Limitação que permanece
+## Resultado final
 
-Os alertas dispararam no Azure, mas o recebimento do e-mail não foi confirmado. A API de notificação de teste retornou uma restrição da assinatura gratuita. Esse ponto permanece separado dos testes técnicos concluídos e não deve ser apresentado como entrega de notificação validada.
+Laboratório concluído e infraestrutura removida. Um alerta real de Activity Log confirmou a entrega por e-mail em um Action Group temporário. Essa evidência complementa os testes de métricas e incidentes; não comprova a entrega dos e-mails dos alertas de CPU anteriores. Os três recursos do diagnóstico também foram removidos, com inventário final vazio.

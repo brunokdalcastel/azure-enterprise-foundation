@@ -20,7 +20,7 @@ A foundation ficou em North Central US após restrições de SKU na região inic
 - Infraestrutura de laboratório, sem promessa de alta disponibilidade ou prontidão para produção.
 - Personas de serviço não comprovam grupos humanos, MFA ou login interativo.
 - O diagnóstico IP flow da Parte 6 complementa os testes de tráfego real da Parte 5.
-- Disparos de alertas foram observados; recebimento do e-mail não confirmado. A API de notificação de teste rejeitou a assinatura gratuita. Nenhum upgrade foi realizado.
+- Disparos de métricas foram observados no Azure e a entrega por e-mail foi confirmada em um teste complementar de Activity Log. A entrega dos alertas de CPU anteriores não foi comprovada. A restrição da API de notificação de teste não impediu o recebimento do alerta real; nenhum upgrade foi realizado.
 - Não houve GitHub Actions; execução local com revisão de planos foi suficiente para o escopo.
 - Recursos temporários foram removidos após os blocos. Uma interrupção deixou disco, IP e monitoramento ativos entre sessões; desalocar a VM não eliminou esse consumo potencial. O custo efetivo e o saldo final não foram apurados.
 
@@ -37,3 +37,9 @@ A exclusão terminou e o inventário final retornou **zero recursos Azure e zero
 ## Como reproduzir
 
 O código permanece disponível após a destruição. Começar novamente pelo bootstrap e seguir os exemplos e documentos, revendo assinatura, créditos, preços, permissões, região, quota, imagem e IP autorizado. Valores locais, senha, destinatário de alertas e backend devem ser configurados para a nova execução. Não reutilizar planos salvos nem aplicar automaticamente um laboratório já encerrado.
+
+## Validação final das notificações
+
+Após os testes originais, um diagnóstico isolado criou somente um grupo de recursos, um Action Group e uma regra de Activity Log. Uma alteração de tag pelo Terraform gerou o evento monitorado e o alerta chegou por e-mail, com regra e recurso correspondentes. O teste demonstrou o funcionamento da entrega sem recriar uma VM.
+
+Os três recursos foram destruídos após a validação. Uma nova consulta independente confirmou zero recursos e zero grupos na assinatura. O laboratório está concluído; os resultados anteriores continuam preservados como registros de cada etapa. A evidência complementar está em [notification-delivery-results.json](notification-delivery-results.json).

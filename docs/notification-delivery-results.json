@@ -1,0 +1,23 @@
+{
+  "date": "2026-10-02",
+  "alertType": "Activity Log",
+  "alertRule": "alert-notification-diag-01",
+  "actionGroup": "ag-notification-diag-01",
+  "alertCreatedUtc": "2026-10-02T20:20:43.2080906Z",
+  "actionsTriggeredUtc": "2026-10-02T20:20:43.985756Z",
+  "gmailMessageDateUtc": "2026-10-02T20:20:49Z",
+  "gmailDeliveryConfirmed": true,
+  "messageMatchesRuleAndResource": true,
+  "senderAuthentication": {
+    "dkim": "pass",
+    "spf": "pass",
+    "dmarc": "pass"
+  },
+  "limitations": "This validates Activity Log notification delivery; prior CPU email failure cause remains unproven.",
+  "cleanup": "Completed: 3 resources destroyed; independent Azure inventory confirms 0 resources and 0 resource groups; local state has 0 managed resources",
+  "finalInventory": {
+    "resourceGroups": 0,
+    "resources": 0,
+    "managedStateResources": 0
+  }
+}

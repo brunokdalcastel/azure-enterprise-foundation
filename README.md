@@ -48,10 +48,10 @@ Usei Windows Server 2019 Core, VM `Standard_B2ats_v2`, Trusted Launch e disco St
 | RBAC | 12 testes de permissões com personas de identidade gerenciada |
 | Policy | Testes de bloqueio por região, tamanho de VM e tags |
 | Incidentes | IIS indisponível e recuperado; regra HTTP alterada de Allow para Deny e restaurada |
-| Alertas | Disparos reais registrados no Azure; entrega do e-mail ainda não comprovada |
+| Alertas | Disparos reais registrados no Azure; entrega por e-mail confirmada em teste complementar de Activity Log |
 | Limpeza | Infraestrutura removida, com inventário final sem recursos ou grupos de recursos |
 
-A API de envio de notificação de teste retornou uma restrição da assinatura gratuita. Por isso, o disparo do alerta e a entrega do e-mail estão tratados como validações diferentes na documentação.
+O laboratório está concluído e a infraestrutura foi removida. A entrega por e-mail foi validada com um alerta real de Activity Log em um grupo de ações temporário. Os alertas de CPU e disponibilidade tiveram disparos comprovados no Azure; a confirmação de e-mail corresponde ao teste complementar descrito na documentação de operação.
 
 ## Como reproduzir
 
