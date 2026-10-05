@@ -9,13 +9,13 @@ Free Trial ativa e spending limit On confirmados via ARM; disponibilidade de cr�
 - Blob de estado confirmado com 895 bytes e lease disponível após operação.
 - Primeiro acesso recebeu AuthorizationPermissionMismatch durante propagação da role; nova tentativa funcionou sem abrir firewall/habilitar chave.
 - Terraform 1.14.3, Azure CLI 2.80.0, Git 2.52.0, AzureRM 4.74.0 fixado e lock file gerado.
-- Storage e versões do estado permanecem ativos e consomem créditos conforme uso. Não confundir a estimativa abaixo com consumo já medido.
+- Durante esta etapa, Storage e versões do estado permaneceram ativos e sujeitos a consumo. Foram removidos no encerramento; a estimativa abaixo não é consumo medido.
 
 ## O que cada bloco faz
 - `bootstrap/versions.tf`: fixa AzureRM 4.74.0, usa sua sessão Azure CLI e mantém estado local do bootstrap.
 - `bootstrap/main.tf`: RG, StorageV2 Standard LRS Hot, container privado e RBAC de dados no container para o executor.
 - Firewall do Storage aceita somente IPv4 administrativo. HTTPS/TLS 1.2, autenticação Entra ID e acesso anônimo/chaves desabilitados.
-- `foundation/versions.tf`: inicializa o backend remoto e grava um marcador Terraform sem criar recursos Azure. Não implementa a Parte 3.
+- `foundation/versions.tf`: configura o backend remoto e um marcador Terraform. No repositório final, o mesmo root também contém rede e governança: um apply da foundation já cria esses recursos, mesmo com workload desabilitado.
 - Estado do bootstrap fica local para conseguir remover o backend por último. Nunca publicar `.tfstate`, planos ou valores locais.
 
 ## Execução
@@ -30,10 +30,13 @@ terraform -chdir=bootstrap plan -out=bootstrap.tfplan
 terraform -chdir=bootstrap apply bootstrap.tfplan
 # Gerar configuração local e inicializar backend:
 ./scripts/Initialize-FoundationBackend.ps1
-terraform -chdir=foundation plan -out=backend.tfplan
-terraform -chdir=foundation apply backend.tfplan
+# O código final já inclui a Parte 3. Revise também rede e governança.
+terraform -chdir=foundation plan -out=foundation.tfplan
+terraform -chdir=foundation apply foundation.tfplan
 terraform -chdir=foundation plan -detailed-exitcode
 ```
+
+A sequência de planos acima usa o código final. O teste original com apenas um marcador de backend é uma evidência histórica, não um modo isolado disponível no root atual. Preencha os arquivos locais de variáveis dos dois roots antes de executar.
 
 Se RBAC ainda estiver propagando, repetir somente init/consulta após aguardar; não abrir firewall nem habilitar chaves como solução.
 

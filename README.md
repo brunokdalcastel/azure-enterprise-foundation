@@ -98,3 +98,9 @@ A execução utilizou créditos do Azure Free Trial com o limite de gastos ativo
 O foco é aprendizado prático. O desenho não inclui alta disponibilidade ou compromissos de produção. As personas usadas nos testes são identidades de serviço, não testes de MFA ou login de usuários. O fluxo foi executado localmente com Terraform; GitHub Actions não faz parte desta versão.
 
 Estados, planos, credenciais e configurações pessoais não são publicados no repositório.
+
+### Limites de segurança do desenho
+
+A aplicação usa HTTP privado para o ensaio; não há TLS de aplicação. As VMs têm IP público para saída explícita, com entrada controlada por NSG e firewall do Windows. O backend usa endpoint público restrito por IP e autenticação Entra ID, sem Private Endpoint. A saída HTTP/HTTPS para a Internet não possui filtragem por domínio.
+
+As quatro identidades de teste ficam na mesma VM auxiliar para exercitar RBAC. Essa VM é um executor confiável do laboratório, não uma fronteira de isolamento entre usuários. Estados Terraform podem conter a senha da VM mesmo quando a variável é marcada como sensível; estados, planos e configurações locais devem permanecer protegidos e fora do Git.
