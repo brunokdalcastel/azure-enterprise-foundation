@@ -27,6 +27,8 @@ A ideia é percorrer o ciclo completo: construir, testar o que deve funcionar, t
 
 ## Arquitetura
 
+![Arquitetura do laboratório](docs/img/arquitetura.png)
+
 A foundation foi implantada em North Central US e o backend em Brazil South. A escolha da região da aplicação foi ajustada conforme a disponibilidade de tamanho de VM na assinatura.
 
 ```mermaid
