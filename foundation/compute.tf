@@ -10,6 +10,7 @@ resource "azurerm_public_ip" "web" {
 }
 
 resource "azurerm_network_interface" "web" {
+  #checkov:skip=CKV_AZURE_119:IP público usado para saída explícita (default outbound desligado); entrada limitada por NSG e firewall do Windows.
   count               = var.workload_enabled ? 1 : 0
   name                = "nic-web-dev-ncu-01"
   location            = local.location
@@ -53,7 +54,7 @@ resource "azurerm_windows_virtual_machine" "web" {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2019-datacenter-core-smalldisk-g2"
-    version   = "17763.9245.260906"
+    version   = var.windows_image_version
   }
   boot_diagnostics {}
   lifecycle {

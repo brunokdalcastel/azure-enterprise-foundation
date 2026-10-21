@@ -1,6 +1,6 @@
 locals {
-  personas = var.part5_enabled ? toset(["network", "analyst", "developer", "auditor"]) : toset([])
-  persona_roles = var.part5_enabled ? {
+  personas = var.segmentation_lab_enabled ? toset(["network", "analyst", "developer", "auditor"]) : toset([])
+  persona_roles = var.segmentation_lab_enabled ? {
     network            = { persona = "network", role = "Network Contributor", group = "network" }
     analyst_vm         = { persona = "analyst", role = "Virtual Machine Contributor", group = "workload" }
     analyst_read       = { persona = "analyst", role = "Reader", group = "network" }
@@ -30,7 +30,7 @@ resource "azurerm_role_assignment" "persona" {
 }
 
 resource "azurerm_role_definition" "power" {
-  count       = var.part5_enabled ? 1 : 0
+  count       = var.segmentation_lab_enabled ? 1 : 0
   name        = "Lab VM Power Operator"
   scope       = azurerm_resource_group.foundation["workload"].id
   description = "Laboratório: ler, iniciar, reiniciar e desalocar VM; sem Run Command ou alterações de rede."
@@ -46,7 +46,7 @@ resource "azurerm_role_definition" "power" {
 }
 
 resource "azurerm_role_assignment" "power" {
-  count                            = var.part5_enabled ? 1 : 0
+  count                            = var.segmentation_lab_enabled ? 1 : 0
   scope                            = azurerm_windows_virtual_machine.web[0].id
   role_definition_id               = azurerm_role_definition.power[0].role_definition_resource_id
   principal_id                     = azurerm_user_assigned_identity.persona["developer"].principal_id
@@ -55,7 +55,7 @@ resource "azurerm_role_assignment" "power" {
 }
 
 resource "azurerm_public_ip" "test" {
-  count               = var.part5_enabled ? 1 : 0
+  count               = var.segmentation_lab_enabled ? 1 : 0
   name                = "pip-test-dev-ncu-01"
   location            = local.location
   resource_group_name = azurerm_resource_group.foundation["workload"].name
@@ -66,7 +66,8 @@ resource "azurerm_public_ip" "test" {
 }
 
 resource "azurerm_network_interface" "test" {
-  count               = var.part5_enabled ? 1 : 0
+  #checkov:skip=CKV_AZURE_119:IP público usado para saída explícita (default outbound desligado); entrada limitada por NSG e firewall do Windows.
+  count               = var.segmentation_lab_enabled ? 1 : 0
   name                = "nic-test-dev-ncu-01"
   location            = local.location
   resource_group_name = azurerm_resource_group.foundation["workload"].name
@@ -82,7 +83,7 @@ resource "azurerm_network_interface" "test" {
 }
 
 resource "azurerm_windows_virtual_machine" "test" {
-  count                 = var.part5_enabled ? 1 : 0
+  count                 = var.segmentation_lab_enabled ? 1 : 0
   name                  = "vm-test-dev-ncu-01"
   computer_name         = "wintest01"
   location              = local.location
@@ -111,14 +112,14 @@ resource "azurerm_windows_virtual_machine" "test" {
     publisher = "MicrosoftWindowsServer"
     offer     = "WindowsServer"
     sku       = "2019-datacenter-core-smalldisk-g2"
-    version   = "17763.9245.260906"
+    version   = var.windows_image_version
   }
   boot_diagnostics {}
   depends_on = [azurerm_resource_group_policy_assignment.foundation]
 }
 
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "test" {
-  count                 = var.part5_enabled ? 1 : 0
+  count                 = var.segmentation_lab_enabled ? 1 : 0
   virtual_machine_id    = azurerm_windows_virtual_machine.test[0].id
   location              = local.location
   enabled               = true

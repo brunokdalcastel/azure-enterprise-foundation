@@ -10,11 +10,6 @@ terraform {
   backend "azurerm" {}
 }
 
-# Marcador preservado do teste de backend da Parte 2.
-resource "terraform_data" "backend_validation" {
-  input = "foundation-dev-backend-ready"
-}
-
 provider "azurerm" {
   features {}
   subscription_id                 = var.subscription_id

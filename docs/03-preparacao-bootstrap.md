@@ -15,7 +15,7 @@ Free Trial ativa e spending limit On confirmados via ARM; disponibilidade de cr�
 - `bootstrap/versions.tf`: fixa AzureRM 4.74.0, usa sua sessão Azure CLI e mantém estado local do bootstrap.
 - `bootstrap/main.tf`: RG, StorageV2 Standard LRS Hot, container privado e RBAC de dados no container para o executor.
 - Firewall do Storage aceita somente IPv4 administrativo. HTTPS/TLS 1.2, autenticação Entra ID e acesso anônimo/chaves desabilitados.
-- `foundation/versions.tf`: configura o backend remoto e um marcador Terraform. No repositório final, o mesmo root também contém rede e governança: um apply da foundation já cria esses recursos, mesmo com workload desabilitado.
+- `foundation/versions.tf`: configura o backend remoto (o marcador `terraform_data` do teste original foi removido do código após o encerramento). No repositório final, o mesmo root também contém rede e governança: um apply da foundation já cria esses recursos, mesmo com workload desabilitado.
 - Estado do bootstrap fica local para conseguir remover o backend por último. Nunca publicar `.tfstate`, planos ou valores locais.
 
 ## Execução

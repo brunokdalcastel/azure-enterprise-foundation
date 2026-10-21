@@ -1,5 +1,10 @@
 # Azure Enterprise Foundation
 
+[![terraform-ci](https://github.com/brunokdalcastel/azure-enterprise-foundation/actions/workflows/terraform-ci.yml/badge.svg)](https://github.com/brunokdalcastel/azure-enterprise-foundation/actions/workflows/terraform-ci.yml)
+![Terraform](https://img.shields.io/badge/Terraform-1.14-7B42BC?logo=terraform)
+![AzureRM](https://img.shields.io/badge/AzureRM-4.74.0-0078D4?logo=microsoftazure)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Um projeto prático de infraestrutura no Azure com Terraform, Windows Server e IIS.
 
 Construí este laboratório para praticar como organizar uma aplicação interna na nuvem: preparar a rede, controlar acessos, aplicar regras de governança e investigar falhas. Usei a Contoso Brasil como cenário fictício de uma empresa recebendo sua primeira aplicação Windows.
@@ -55,7 +60,7 @@ O laboratório está concluído e a infraestrutura foi removida. A entrega por e
 
 ## Como reproduzir
 
-Você pode usar este repositório como base para montar o mesmo laboratório na sua assinatura. Enquanto o repositório estiver privado, será necessário ter acesso a ele para clonar.
+Você pode usar este repositório como base para montar o mesmo laboratório na sua assinatura.
 
 ```powershell
 git clone https://github.com/brunokdalcastel/azure-enterprise-foundation.git
@@ -65,13 +70,33 @@ cd azure-enterprise-foundation
 O ambiente usado foi Windows com PowerShell, Azure CLI 2.80.0 e Terraform 1.14.3. O provider AzureRM está fixado em 4.74.0 nos arquivos de configuração.
 
 1. Leia a [arquitetura](docs/01-arquitetura.md) e a [preparação do ambiente](docs/03-preparacao-bootstrap.md). Confira sua assinatura, permissões, créditos, região e quota antes de criar recursos.
-2. Configure os valores locais a partir dos arquivos `terraform.example.tfvars` em `bootstrap/` e `foundation/`. Use seus próprios identificadores, IPs e um nome de Storage disponível. Senhas e destinatários de alertas ficam fora do Git.
+2. Configure os valores locais a partir dos arquivos `terraform.example.tfvars` em `bootstrap/` e `foundation/`. Use seus próprios identificadores, IPs e um nome de Storage disponível. Senhas e destinatários de alertas ficam fora do Git. A imagem do Windows usa `windows_image_version = "latest"` por padrão; a versão do laboratório original (17763.9245.260906) pode não estar mais disponível.
 3. Crie o bootstrap e inicialize o backend da foundation. O estado do bootstrap deve permanecer local, pois ele gerencia o próprio Storage do estado remoto.
-4. Execute `terraform fmt -check`, `terraform validate` e revise cada `terraform plan` antes de aplicar. Siga as etapas da documentação para habilitar aplicação, testes de RBAC e monitoramento; esses blocos ficam desligados por padrão.
+4. Execute `terraform fmt -check`, `terraform validate`, `tflint` e revise cada `terraform plan` antes de aplicar. Siga as etapas da documentação para habilitar aplicação, testes de RBAC e monitoramento; esses blocos ficam desligados por padrão.
 5. Execute os testes, registre seus resultados e remova os recursos temporários ao terminar cada bloco.
 6. No encerramento, destrua a foundation antes do bootstrap e confira o inventário, incluindo recursos criados automaticamente fora do Terraform.
 
 O ambiente original já foi removido. Para reproduzir, é necessário criar um novo backend e configurar seus valores locais. Os documentos de cada etapa registram o que existia naquele momento; não indicam uma infraestrutura que continua ativa.
+
+## O que aprendi no encerramento
+
+- **`terraform destroy` não zera a assinatura sozinho.** O Azure criou dois Network Watchers automaticamente quando as VNets nasceram, e eles nunca entraram no state. Só o inventário final mostrou que ainda existiam.
+- **Desalocar a VM não para todo o custo.** Disco e IP público continuam cobrando. Uma interrupção entre sessões deixou esses recursos ativos; por isso a limpeza virou etapa do projeto.
+- **Os testes mais úteis foram os negativos.** Policy negando região, SKU e tag; RBAC retornando 403; NSG bloqueando tráfego lateral. Um controle que nunca foi visto falhando ainda não foi testado.
+- **A região depende da quota.** Brazil South não tinha o tamanho de VM disponível na assinatura gratuita; a foundation foi para North Central US e o backend ficou no Brasil.
+
+## Integração contínua
+
+O workflow [`terraform-ci`](.github/workflows/terraform-ci.yml) roda a cada push e pull request:
+
+| Etapa | Ferramenta |
+|---|---|
+| Formatação | `terraform fmt -check -recursive` |
+| Sintaxe e tipos | `terraform validate` nos roots `bootstrap/` e `foundation/` (sem backend) |
+| Boas práticas | `tflint` com os rulesets Terraform e AzureRM |
+| Segurança | `checkov` |
+
+A pipeline faz só validação estática: não autentica no Azure e não cria recursos. As exceções do checkov estão no próprio código (`#checkov:skip`), cada uma com o motivo, e correspondem aos limites descritos abaixo.
 
 ## Documentação
 
@@ -95,7 +120,7 @@ Os diretórios `scripts/` e `tests/` contêm os scripts de verificação e os te
 
 A execução utilizou créditos do Azure Free Trial com o limite de gastos ativo. Isso não significa que todos os recursos sejam gratuitos: VMs, discos, IPs, Storage e monitoramento podem consumir créditos. Confira os preços e as condições da sua assinatura antes de reproduzir. Desalocar uma VM não remove seu disco nem seu IP; a limpeza faz parte do exercício.
 
-O foco é aprendizado prático. O desenho não inclui alta disponibilidade ou compromissos de produção. As personas usadas nos testes são identidades de serviço, não testes de MFA ou login de usuários. O fluxo foi executado localmente com Terraform; GitHub Actions não faz parte desta versão.
+O foco é aprendizado prático. O desenho não inclui alta disponibilidade ou compromissos de produção. As personas usadas nos testes são identidades de serviço, não testes de MFA ou login de usuários. A implantação foi executada localmente com Terraform; o GitHub Actions faz apenas a validação estática descrita acima.
 
 Estados, planos, credenciais e configurações pessoais não são publicados no repositório.
 

@@ -52,13 +52,13 @@ variable "workload_enabled" {
   default     = false
 }
 
-variable "part5_enabled" {
+variable "segmentation_lab_enabled" {
   description = "Laboratório temporário de segmentação e RBAC; requer workload habilitado."
   type        = bool
   default     = false
   validation {
-    condition     = !var.part5_enabled || var.workload_enabled
-    error_message = "Parte 5 requer workload_enabled=true."
+    condition     = !var.segmentation_lab_enabled || var.workload_enabled
+    error_message = "O laboratório de RBAC e segmentação requer workload_enabled=true."
   }
 }
 
@@ -105,4 +105,10 @@ variable "cpu_alert_threshold" {
     condition     = var.cpu_alert_threshold >= 0 && var.cpu_alert_threshold <= 100
     error_message = "Limiar de CPU deve estar entre0 e100."
   }
+}
+
+variable "windows_image_version" {
+  description = "Versão da imagem Windows Server 2019 Core Gen2. Use \"latest\" ou fixe uma versão disponível (az vm image list --all). O lab original usou 17763.9245.260906, que a Microsoft pode retirar."
+  type        = string
+  default     = "latest"
 }

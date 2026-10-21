@@ -49,6 +49,6 @@ Inventário final: zero recursos no RG workload, zero identidades de teste, zero
 
 As identidades são personas de serviço, não contas humanas: membership de grupos Entra, MFA e login interativo não foram testados. A VM test concentra as quatro identidades somente para laboratório controlado e descartável.
 
-Para reproduzir: habilitar workload_enabled e part5_enabled, manter admin_access_enabled=false; aplicar plano revisado; executar Test-Segmentation.ps1 na VM test; preencher o placeholder do template Test-Personas.ps1.tftpl com client IDs/IDs dos recursos/tags, em arquivo local ignorado; executar por Run Command como executor. Tokens ficam somente na memória do guest e jamais nos resultados. Ao concluir, desabilitar part5/workload, aplicar plano de destruição e verificar inventários de recursos e acessos.
+Para reproduzir: habilitar workload_enabled e segmentation_lab_enabled, manter admin_access_enabled=false; aplicar plano revisado; executar Test-Segmentation.ps1 na VM test; preencher o placeholder do template Test-Personas.ps1.tftpl com client IDs/IDs dos recursos/tags, em arquivo local ignorado; executar por Run Command como executor. Tokens ficam somente na memória do guest e jamais nos resultados. Ao concluir, desabilitar segmentation_lab_enabled e workload_enabled, aplicar plano de destruição e verificar inventários de recursos e acessos.
 
 Plano final após limpeza: detailed-exitcode 0, No changes. Nenhuma execução pendente.
